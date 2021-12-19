@@ -181,5 +181,4 @@ class SudokuBoard extends React.Component {
   }
 }
 
-
 export default SudokuBoard;

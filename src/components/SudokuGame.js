@@ -5,6 +5,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import SudokuBoard from "./SudokuBoard";
 import puzzleToSquares from "../lib/puzzleToSquares";
 import SudokuControl from "./SudokuControl";
+import solveSudoku from "../lib/solveSudoku";
 
 class SudokuGame extends React.Component {
   constructor(props) {
@@ -19,7 +20,9 @@ class SudokuGame extends React.Component {
   }
 
   newGame(difficulty) {
-    fetch(`https://vast-chamber-17969.herokuapp.com/generate?difficulty=${difficulty}`)
+    fetch(
+      `https://vast-chamber-17969.herokuapp.com/generate?difficulty=${difficulty}`
+    )
       .then((res) => res.json())
       .then(
         (result) => {
@@ -28,6 +31,8 @@ class SudokuGame extends React.Component {
             isLoaded: true,
             difficulty: result.difficulty,
             history: [{ squares }],
+            stepNumber: 0,
+            isSolved: false,
           });
         },
         (error) => {
@@ -71,9 +76,22 @@ class SudokuGame extends React.Component {
       stepNumber: this.state.stepNumber + 1,
     });
   }
+  solve() {
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = JSON.parse(JSON.stringify(current.squares));
+
+    solveSudoku(squares);
+
+    this.setState({
+      history: history.concat([{ squares }]),
+      stepNumber: history.length,
+      isSolved: true,
+    });
+  }
 
   render() {
-    const { history, isLoaded, stepNumber, difficulty } = this.state;
+    const { history, isLoaded, stepNumber, difficulty, isSolved } = this.state;
     const current = history ? history[stepNumber] : null;
     // const winner = calculateWinner(current.squares);
 
@@ -83,6 +101,7 @@ class SudokuGame extends React.Component {
     // } else {
     //   status = `Next player: ${this.state.xIsNext ? "X" : "O"}`;
     // }
+
     if (!isLoaded) {
       return <div>loading...</div>;
     }
@@ -96,9 +115,11 @@ class SudokuGame extends React.Component {
             undo={() => this.undo()}
             redo={() => this.redo()}
             newGame={(difficulty) => this.newGame(difficulty)}
+            solve={() => this.solve()}
+            isSolved={isSolved}
           ></SudokuControl>
           <SudokuBoard
-            squares={current.squares}
+            squares={current?.squares}
             onChange={(row, col, e) => this.handleChange(row, col, e)}
           />
         </div>
