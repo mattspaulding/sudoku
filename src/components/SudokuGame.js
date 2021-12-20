@@ -35,6 +35,7 @@ class SudokuGame extends React.Component {
             stepNumber: 0,
             isSolvable: true,
             isSolved: false,
+            isTrainingMode: false,
           });
         },
         (error) => {
@@ -57,6 +58,7 @@ class SudokuGame extends React.Component {
 
     let val = [...e.target.value].pop();
     const re = /^[1-9\b]+$/;
+    val = val || "";
     if (val && (!re.test(val) || val === squares[row][col].val)) {
       return;
     }
@@ -71,25 +73,31 @@ class SudokuGame extends React.Component {
   }
 
   undo() {
+    const stepNumber = this.state.stepNumber - 1;
     this.setState({
-      stepNumber: this.state.stepNumber - 1,
+      stepNumber,
+      isSolvable: this.checkSolvable(stepNumber),
     });
-   this.checkSolvable();
   }
   redo() {
+    const stepNumber = this.state.stepNumber + 1;
     this.setState({
-      stepNumber: this.state.stepNumber + 1,
+      stepNumber,
+      isSolvable: this.checkSolvable(stepNumber),
     });
-    this.checkSolvable();
   }
-  checkSolvable() {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-
-    const isSolvable = solveSudoku(current.squares).isSolvable;
+  turnOnTrainingMode() {
     this.setState({
-      isSolvable,
+      isTrainingMode: true,
     });
+  }
+  checkSolvable(stepNumber) {
+    const history = this.state.history.slice(0, stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = JSON.parse(JSON.stringify(current.squares));
+
+    const isSolvable = solveSudoku(squares).isSolvable;
+    return isSolvable;
   }
   solve() {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
@@ -106,8 +114,15 @@ class SudokuGame extends React.Component {
   }
 
   render() {
-    const { history, isLoaded, stepNumber, difficulty, isSolvable, isSolved } =
-      this.state;
+    const {
+      history,
+      isLoaded,
+      stepNumber,
+      difficulty,
+      isTrainingMode,
+      isSolvable,
+      isSolved,
+    } = this.state;
     const current = history ? history[stepNumber] : null;
 
     if (!isLoaded) {
@@ -128,6 +143,8 @@ class SudokuGame extends React.Component {
             history={history}
             stepNumber={stepNumber}
             difficulty={difficulty}
+            isTrainingMode={isTrainingMode}
+            turnOnTrainingMode={() => this.turnOnTrainingMode()}
             undo={() => this.undo()}
             redo={() => this.redo()}
             solve={() => this.solve()}
