@@ -10,11 +10,11 @@ class SudokuControl extends React.Component {
           <div className="col-12 pb-3">
             <h1>Sudoku</h1>
           </div>
-          <div className="col-4 text-center">
+          <div className="col-12 text-center">
             <button
               type="button"
               className={
-                "btn btn-labeled " +
+                "btn btn-labeled p-2 m-3 " +
                 (this.props.difficulty == "easy" ? "btn-dark" : "btn-secondary")
               }
               onClick={() => this.props.newGame(`easy`)}
@@ -26,12 +26,10 @@ class SudokuControl extends React.Component {
               </span>
               Easy
             </button>
-          </div>
-          <div className="col-4 text-center">
             <button
               type="button"
               className={
-                "btn btn-labeled " +
+                "btn btn-labeled p-2 m-3 " +
                 (this.props.difficulty == "medium"
                   ? "btn-dark"
                   : "btn-secondary")
@@ -45,12 +43,10 @@ class SudokuControl extends React.Component {
               </span>
               Medium
             </button>
-          </div>
-          <div className="col-4 text-center">
             <button
               type="button"
               className={
-                "btn btn-labeled " +
+                "btn btn-labeled p-2 m-3 " +
                 (this.props.difficulty == "hard" ? "btn-dark" : "btn-secondary")
               }
               onClick={() => this.props.newGame(`hard`)}
