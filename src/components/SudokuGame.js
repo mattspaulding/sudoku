@@ -134,29 +134,27 @@ class SudokuGame extends React.Component {
       return <div>loading...</div>;
     }
     return (
-      <div className="game container">
-        <div className="game-board">
-          <SudokuControl
-            difficulty={difficulty}
-            newGame={(difficulty) => this.newGame(difficulty)}
-          />
-          <SudokuBoard
-            squares={current?.squares}
-            onChange={(row, col, e) => this.handleChange(row, col, e)}
-          />
-          <SudokuFooter
-            history={history}
-            stepNumber={stepNumber}
-            difficulty={difficulty}
-            isTrainingMode={isTrainingMode}
-            turnOnTrainingMode={() => this.turnOnTrainingMode()}
-            undo={() => this.undo()}
-            redo={() => this.redo()}
-            solve={() => this.solve()}
-            isSolvable={isSolvable}
-            isSolved={isSolved}
-          />
-        </div>
+      <div className="container">
+        <SudokuControl
+          difficulty={difficulty}
+          newGame={(difficulty) => this.newGame(difficulty)}
+        />
+        <SudokuBoard
+          squares={current?.squares}
+          onChange={(row, col, e) => this.handleChange(row, col, e)}
+        />
+        <SudokuFooter
+          history={history}
+          stepNumber={stepNumber}
+          difficulty={difficulty}
+          isTrainingMode={isTrainingMode}
+          turnOnTrainingMode={() => this.turnOnTrainingMode()}
+          undo={() => this.undo()}
+          redo={() => this.redo()}
+          solve={() => this.solve()}
+          isSolvable={isSolvable}
+          isSolved={isSolved}
+        />
       </div>
     );
   }

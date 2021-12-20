@@ -26,7 +26,7 @@ class SudokuFooter extends React.Component {
             )}
             {this.props.isTrainingMode && (
               <div className="row py-5">
-                <div className="col-4">
+                <div className="col-5">
                   <button
                     type="button"
                     className="btn btn-labeled btn-warning m-2"
@@ -68,7 +68,7 @@ class SudokuFooter extends React.Component {
                     {this.props.isSolvable ? "Solvable" : "Unsolvable"}
                   </span>
                 </div>
-                <div className="col-4 fs-2">
+                <div className="col-3 fs-2">
                   <div>Turn {this.props.stepNumber}</div>
                 </div>
               </div>

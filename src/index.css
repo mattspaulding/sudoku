@@ -18,11 +18,6 @@ body {
   width: 34px;
 }
 
-.game {
-  display: flex;
-  flex-direction: row;
-}
-
 .sudoku-board {
   width: 313px !important;
 }

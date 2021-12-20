@@ -7,8 +7,9 @@ class SudokuControl extends React.Component {
     return (
       <div className="container">
         <div className="row py-5">
-          <h1>Sudoku</h1>
-          <h4>Choose Difficulty</h4>
+          <div className="col-12 pb-3">
+            <h1>Sudoku</h1>
+          </div>
           <div className="col-4 text-center">
             <button
               type="button"
@@ -63,7 +64,6 @@ class SudokuControl extends React.Component {
             </button>
           </div>
         </div>
-       
       </div>
     );
   }
