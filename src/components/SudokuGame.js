@@ -6,6 +6,7 @@ import SudokuBoard from "./SudokuBoard";
 import puzzleToSquares from "../lib/puzzleToSquares";
 import SudokuControl from "./SudokuControl";
 import solveSudoku from "../lib/solveSudoku";
+import SudokuFooter from "./SudokuFooter";
 
 class SudokuGame extends React.Component {
   constructor(props) {
@@ -32,6 +33,7 @@ class SudokuGame extends React.Component {
             difficulty: result.difficulty,
             history: [{ squares }],
             stepNumber: 0,
+            isSolvable: true,
             isSolved: false,
           });
         },
@@ -60,9 +62,11 @@ class SudokuGame extends React.Component {
     }
 
     squares[row][col] = { val };
+    const isSolvable = solveSudoku(squares).isSolvable;
     this.setState({
       history: history.concat([{ squares }]),
       stepNumber: history.length,
+      isSolvable,
     });
   }
 
@@ -70,37 +74,41 @@ class SudokuGame extends React.Component {
     this.setState({
       stepNumber: this.state.stepNumber - 1,
     });
+   this.checkSolvable();
   }
   redo() {
     this.setState({
       stepNumber: this.state.stepNumber + 1,
     });
+    this.checkSolvable();
+  }
+  checkSolvable() {
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+
+    const isSolvable = solveSudoku(current.squares).isSolvable;
+    this.setState({
+      isSolvable,
+    });
   }
   solve() {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
-    const squares = JSON.parse(JSON.stringify(current.squares));
 
-    solveSudoku(squares);
-
-    this.setState({
-      history: history.concat([{ squares }]),
-      stepNumber: history.length,
-      isSolved: true,
-    });
+    const result = solveSudoku(current.squares);
+    if (result.isSolvable) {
+      this.setState({
+        history: history.concat([{ squares: result.squares }]),
+        stepNumber: history.length,
+        isSolved: true,
+      });
+    }
   }
 
   render() {
-    const { history, isLoaded, stepNumber, difficulty, isSolved } = this.state;
+    const { history, isLoaded, stepNumber, difficulty, isSolvable, isSolved } =
+      this.state;
     const current = history ? history[stepNumber] : null;
-    // const winner = calculateWinner(current.squares);
-
-    // let status;
-    // if (winner) {
-    //   status = "Winner: " + winner;
-    // } else {
-    //   status = `Next player: ${this.state.xIsNext ? "X" : "O"}`;
-    // }
 
     if (!isLoaded) {
       return <div>loading...</div>;
@@ -109,19 +117,23 @@ class SudokuGame extends React.Component {
       <div className="game container">
         <div className="game-board">
           <SudokuControl
-            history={history}
-            stepNumber={stepNumber}
             difficulty={difficulty}
-            undo={() => this.undo()}
-            redo={() => this.redo()}
             newGame={(difficulty) => this.newGame(difficulty)}
-            solve={() => this.solve()}
-            isSolved={isSolved}
           ></SudokuControl>
           <SudokuBoard
             squares={current?.squares}
             onChange={(row, col, e) => this.handleChange(row, col, e)}
           />
+          <SudokuFooter
+            history={history}
+            stepNumber={stepNumber}
+            difficulty={difficulty}
+            undo={() => this.undo()}
+            redo={() => this.redo()}
+            solve={() => this.solve()}
+            isSolvable={isSolvable}
+            isSolved={isSolved}
+          ></SudokuFooter>
         </div>
       </div>
     );

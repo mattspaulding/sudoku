@@ -1,4 +1,6 @@
 export default function solveSudoku(squares) {
+  squares = JSON.parse(JSON.stringify(squares));
+
   const board = squares.map((row) => {
     return row.map((square) => {
       return Number(square.val);
@@ -7,13 +9,17 @@ export default function solveSudoku(squares) {
 
   const solvedBoard = solve(board);
 
+  let isSolvable = true;
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
+      if (solvedBoard[i][j] === 0) {
+        isSolvable = false;
+      }
       squares[i][j].val = String(solvedBoard[i][j]);
     }
   }
 
-  return squares;
+  return { squares, isSolvable };
 }
 
 function solve(board) {
