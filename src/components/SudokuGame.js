@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -9,52 +9,39 @@ import solveSudoku from "../lib/solveSudoku";
 import SudokuFooter from "./SudokuFooter";
 import isSudokuSolved from "../lib/isSudokuSolved";
 
-class SudokuGame extends React.Component {
-  constructor(props) {
-    super(props);
+function SudokuGame() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [history, setHistory] = useState([{}]);
+  const [stepNumber, setStepNumber] = useState(0);
+  const [difficulty, setDifficulty] = useState("easy");
+  const [isSolvable, setIsSolvable] = useState(true);
+  const [isSolved, setIsSolved] = useState(false);
+  const [isTrainingMode, setIsTrainingMode] = useState(false);
 
-    this.state = {
-      isLoaded: false,
-      stepNumber: 0,
-    };
+  useEffect(() => {
+    newGame(difficulty);
+  }, []);
 
-    this.handleChange = this.handleChange.bind(this);
-  }
+  const newGame = async (diff) => {
+    const result = await fetch(
+      `https://vast-chamber-17969.herokuapp.com/generate?difficulty=${diff}`
+    ).then((r) => r.json());
 
-  newGame(difficulty) {
-    fetch(
-      `https://vast-chamber-17969.herokuapp.com/generate?difficulty=${difficulty}`
-    )
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          const squares = puzzleToSquares(result.puzzle);
-          this.setState({
-            isLoaded: true,
-            difficulty: result.difficulty,
-            history: [{ squares }],
-            stepNumber: 0,
-            isSolvable: true,
-            isSolved: false,
-            isTrainingMode: false,
-          });
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error,
-          });
-        }
-      );
-  }
+    const squares = puzzleToSquares(result.puzzle);
+    let h = history;
+    setIsLoaded(false);
+    setDifficulty(result.difficulty);
+    setHistory([{ squares }]);
+    setStepNumber(0);
+    setIsSolvable(true);
+    setIsSolved(false);
+    setIsTrainingMode(false);
+    setIsLoaded(true);
+  };
 
-  componentDidMount() {
-    this.newGame(`easy`);
-  }
-
-  handleChange(row, col, e) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
+  const handleChange = (row, col, e) => {
+    const hist = history.slice(0, stepNumber + 1);
+    const current = hist[hist.length - 1];
     const squares = JSON.parse(JSON.stringify(current.squares));
 
     let val = [...e.target.value].pop();
@@ -65,99 +52,70 @@ class SudokuGame extends React.Component {
     }
 
     squares[row][col] = { val };
-    const isSolvable = solveSudoku(squares).isSolvable;
-    const isSolved = isSudokuSolved(squares);
-    this.setState({
-      history: history.concat([{ squares }]),
-      stepNumber: history.length,
-      isSolvable,
-      isSolved,
-    });
-  }
+    setHistory(hist.concat([{ squares }]));
+    setStepNumber(hist.length);
+    setIsSolvable(solveSudoku(squares).isSolvable);
+    setIsSolved(isSudokuSolved(squares));
+  };
 
-  undo() {
-    const stepNumber = this.state.stepNumber - 1;
-    const isSolvable = this.checkSolvable(stepNumber);
-    this.setState({
-      stepNumber,
-      isSolvable,
-    });
-  }
-  redo() {
-    const stepNumber = this.state.stepNumber + 1;
-    const isSolvable = this.checkSolvable(stepNumber);
-    this.setState({
-      stepNumber,
-      isSolvable,
-    });
-  }
-  turnOnTrainingMode() {
-    this.setState({
-      isTrainingMode: true,
-    });
-  }
-  checkSolvable(stepNumber) {
-    const history = this.state.history.slice(0, stepNumber + 1);
-    const current = history[history.length - 1];
+  const undo = () => {
+    setStepNumber(stepNumber - 1);
+    checkSolvable(stepNumber - 1);
+  };
+  const redo = () => {
+    setStepNumber(stepNumber + 1);
+    checkSolvable(stepNumber + 1);
+  };
+  const checkSolvable = (step) => {
+    const hist = history.slice(0, step + 1);
+    const current = hist[hist.length - 1];
     const squares = JSON.parse(JSON.stringify(current.squares));
 
     const isSolvable = solveSudoku(squares).isSolvable;
-    return isSolvable;
-  }
-  solve() {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
+    setIsSolvable(isSolvable);
+  };
+  const solve = () => {
+    const hist = history.slice(0, stepNumber + 1);
+    const current = hist[hist.length - 1];
 
     const result = solveSudoku(current.squares);
     if (result.isSolvable) {
-      this.setState({
-        history: history.concat([{ squares: result.squares }]),
-        stepNumber: history.length,
-        isSolved: true,
-      });
+      setHistory(hist.concat([{ squares: result.squares }]));
+      setStepNumber(hist.length);
+      setIsSolved(true);
     }
-  }
+  };
 
-  render() {
-    const {
-      history,
-      isLoaded,
-      stepNumber,
-      difficulty,
-      isTrainingMode,
-      isSolvable,
-      isSolved,
-    } = this.state;
-    const current = history ? history[stepNumber] : null;
+  const current = history ? history[stepNumber] : null;
 
-    if (!isLoaded) {
-      return <div>loading...</div>;
-    }
-    return (
-      <div className="container">
-        <SudokuControl
-          difficulty={difficulty}
-          newGame={(difficulty) => this.newGame(difficulty)}
-        />
-        <SudokuBoard
-          squares={current?.squares}
-          onChange={(row, col, e) => this.handleChange(row, col, e)}
-        />
-        <SudokuFooter
-          history={history}
-          stepNumber={stepNumber}
-          difficulty={difficulty}
-          isTrainingMode={isTrainingMode}
-          turnOnTrainingMode={() => this.turnOnTrainingMode()}
-          undo={() => this.undo()}
-          redo={() => this.redo()}
-          solve={() => this.solve()}
-          isSolvable={isSolvable}
-          isSolved={isSolved}
-        />
-      </div>
-    );
-  }
+  return (
+    <div className="container">
+      <SudokuControl
+        difficulty={difficulty}
+        newGame={(difficulty) => newGame(difficulty)}
+      />
+      {isLoaded && (
+        <>
+          <SudokuBoard
+            squares={current.squares}
+            onChange={(row, col, e) => handleChange(row, col, e)}
+          />
+          <SudokuFooter
+            history={history}
+            stepNumber={stepNumber}
+            difficulty={difficulty}
+            isTrainingMode={isTrainingMode}
+            turnOnTrainingMode={() => setIsTrainingMode(true)}
+            undo={() => undo()}
+            redo={() => redo()}
+            solve={() => solve()}
+            isSolvable={isSolvable}
+            isSolved={isSolved}
+          />
+        </>
+      )}
+    </div>
+  );
 }
 
 export default SudokuGame;
