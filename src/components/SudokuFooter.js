@@ -65,7 +65,7 @@ class SudokuFooter extends React.Component {
                     {this.props.isSolvable ? "Solve" : "Unsolvable"}
                   </button>
                 </div>
-                <div className="col-5 fs-2 text-center">
+                <div className="col-5 fs-2 text-end">
                   <div>Turn {this.props.stepNumber}</div>
                 </div>
               </div>
@@ -73,7 +73,7 @@ class SudokuFooter extends React.Component {
           </>
         )}
         {this.props.isSolved && (
-          <div className="row py-5 text-end">
+          <div className="row py-5 text-center">
             <h1>SOLVED!</h1>
           </div>
         )}
