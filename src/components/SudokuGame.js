@@ -7,6 +7,7 @@ import puzzleToSquares from "../lib/puzzleToSquares";
 import SudokuControl from "./SudokuControl";
 import solveSudoku from "../lib/solveSudoku";
 import SudokuFooter from "./SudokuFooter";
+import isSudokuSolved from "../lib/isSudokuSolved";
 
 class SudokuGame extends React.Component {
   constructor(props) {
@@ -65,10 +66,12 @@ class SudokuGame extends React.Component {
 
     squares[row][col] = { val };
     const isSolvable = solveSudoku(squares).isSolvable;
+    const isSolved = isSudokuSolved(squares);
     this.setState({
       history: history.concat([{ squares }]),
       stepNumber: history.length,
       isSolvable,
+      isSolved,
     });
   }
 
@@ -134,7 +137,7 @@ class SudokuGame extends React.Component {
           <SudokuControl
             difficulty={difficulty}
             newGame={(difficulty) => this.newGame(difficulty)}
-          ></SudokuControl>
+          />
           <SudokuBoard
             squares={current?.squares}
             onChange={(row, col, e) => this.handleChange(row, col, e)}
@@ -150,7 +153,7 @@ class SudokuGame extends React.Component {
             solve={() => this.solve()}
             isSolvable={isSolvable}
             isSolved={isSolved}
-          ></SudokuFooter>
+          />
         </div>
       </div>
     );
