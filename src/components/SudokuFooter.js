@@ -19,7 +19,7 @@ class SudokuFooter extends React.Component {
                     <span className="btn-label me-2">
                       <i className="bi-broadcast"></i>
                     </span>
-                    Turn On TrainingMode
+                    Turn On Training Mode
                   </button>
                 </div>
               </div>
