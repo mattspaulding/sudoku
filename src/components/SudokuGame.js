@@ -77,16 +77,18 @@ class SudokuGame extends React.Component {
 
   undo() {
     const stepNumber = this.state.stepNumber - 1;
+    const isSolvable = this.checkSolvable(stepNumber);
     this.setState({
       stepNumber,
-      isSolvable: this.checkSolvable(stepNumber),
+      isSolvable,
     });
   }
   redo() {
     const stepNumber = this.state.stepNumber + 1;
+    const isSolvable = this.checkSolvable(stepNumber);
     this.setState({
       stepNumber,
-      isSolvable: this.checkSolvable(stepNumber),
+      isSolvable,
     });
   }
   turnOnTrainingMode() {

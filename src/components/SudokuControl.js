@@ -8,7 +8,7 @@ class SudokuControl extends React.Component {
       <div className="container">
         <div className="row py-5">
           <h1>Sudoku</h1>
-          <h4>New Game</h4>
+          <h4>Choose Difficulty</h4>
           <div className="col-4 text-center">
             <button
               type="button"
