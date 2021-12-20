@@ -1,7 +1,7 @@
 export default function solveSudoku(squares) {
-  squares = JSON.parse(JSON.stringify(squares));
+  let squaresCopy = JSON.parse(JSON.stringify(squares));
 
-  const board = squares.map((row) => {
+  const board = squaresCopy.map((row) => {
     return row.map((square) => {
       return Number(square.val);
     });
@@ -15,11 +15,11 @@ export default function solveSudoku(squares) {
       if (solvedBoard[i][j] === 0) {
         isSolvable = false;
       }
-      squares[i][j].val = String(solvedBoard[i][j]);
+      squaresCopy[i][j].val = String(solvedBoard[i][j]);
     }
   }
 
-  return { squares, isSolvable };
+  return { squares: squaresCopy, isSolvable };
 }
 
 function solve(board) {

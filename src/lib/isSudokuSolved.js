@@ -6,7 +6,7 @@ export default function isSudokuSolved(squares) {
 
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
-      if (squares[i][j].val !== solved.squares[i][j].val) {
+      if (squaresCopy[i][j].val !== solved.squares[i][j].val) {
         return false;
       }
     }
