@@ -26,7 +26,7 @@ class SudokuFooter extends React.Component {
             )}
             {this.props.isTrainingMode && (
               <div className="row py-5">
-                <div className="col-5">
+                <div className="col-5 text-start">
                   <button
                     type="button"
                     className="btn btn-labeled btn-warning m-2"
@@ -52,7 +52,7 @@ class SudokuFooter extends React.Component {
                     Redo
                   </button>
                 </div>
-                <div className="col-4">
+                <div className="col-2 text-center">
                   <button
                     type="button"
                     className={
@@ -62,13 +62,10 @@ class SudokuFooter extends React.Component {
                     disabled={!this.props.isSolvable}
                     onClick={() => this.props.solve()}
                   >
-                    Solve
+                    {this.props.isSolvable ? "Solve" : "Unsolvable"}
                   </button>
-                  <span>
-                    {this.props.isSolvable ? "Solvable" : "Unsolvable"}
-                  </span>
                 </div>
-                <div className="col-3 fs-2">
+                <div className="col-5 fs-2 text-center">
                   <div>Turn {this.props.stepNumber}</div>
                 </div>
               </div>
@@ -76,7 +73,7 @@ class SudokuFooter extends React.Component {
           </>
         )}
         {this.props.isSolved && (
-          <div className="row py-5 text-center">
+          <div className="row py-5 text-end">
             <h1>SOLVED!</h1>
           </div>
         )}
