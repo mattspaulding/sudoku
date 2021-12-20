@@ -10,6 +10,7 @@ export default function solveSudoku(squares) {
   const solvedBoard = solve(board);
 
   let isSolvable = true;
+
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       if (solvedBoard[i][j] === 0) {
@@ -56,6 +57,13 @@ function nextEmptySpot(board) {
 function checkRow(board, row, value) {
   for (var i = 0; i < board[row].length; i++) {
     if (board[row][i] === value) {
+      return false;
+    }
+
+    const noEmpty = board[row].filter((item) => item !== 0);
+    const noDups = new Set(noEmpty);
+
+    if (noEmpty.length !== noDups.size) {
       return false;
     }
   }
